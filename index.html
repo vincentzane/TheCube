@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<!-- Author: Vincent Rodriguez
+	website: vincentzane.com
+	contact me @ vincentr.alumni.usc.edu
+
+ -->
+
+<html>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	
+
+
+	<head>
+		<meta charset=utf-8>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+	
+		<!-- allow someone to pick a audio file 
+		<form action="">
+			<input id="audioFile" type="file" />
+			
+			<input type="submit">
+		</form>
+		
+		-->
+	
+		<!-- contains all functionality related to cubes --> 
+		<script src="js/three.js"></script>
+		<script src="js/frequencyRange.js"></script>
+		<script src="js/controls.js"></script>
+	
+		<script>
+		
+			function createCube( length, tColor, bColor, posX = 0, posY = 0, posZ = 0, rotX = 0, rotY = 0, rotZ = 0)
+			{
+				
+				var bottomColor = parseInt(bColor);
+				var topColor = parseInt(tColor);
+								
+
+				var meshMaterial = new THREE.MeshBasicMaterial({vertexColors: THREE.VertexColors});
+
+				var geom = new THREE.Geometry(); 
+				var v1 = new THREE.Vector3(-length,-length,-length);
+				var v2 = new THREE.Vector3(length,-length,-length);
+				var v3 = new THREE.Vector3(length,length,-length);
+				var v4 = new THREE.Vector3(-length,length,-length);
+				var v5 = new THREE.Vector3(-length,-length,length);
+				var v6 = new THREE.Vector3(length,-length,length);
+				var v7 = new THREE.Vector3(length,length,length);
+				var v8 = new THREE.Vector3(-length,length,length);
+
+				// push vertices for cube
+				geom.vertices.push(v1);
+				geom.vertices.push(v2);
+				geom.vertices.push(v3);
+				geom.vertices.push(v4);
+				geom.vertices.push(v5);
+				geom.vertices.push(v6);
+				geom.vertices.push(v7);
+				geom.vertices.push(v8);
+
+				// all six faces
+				var face;
+				
+				face = new THREE.Face3(0,2,1);
+				face.vertexColors[0] = new THREE.Color(bottomColor);
+				face.vertexColors[1] = new THREE.Color(bottomColor); 
+				face.vertexColors[2] = new THREE.Color(bottomColor); 
+				geom.faces.push(face);
+
+				
+				face = new THREE.Face3(0,3,2);
+				face.vertexColors[0] = new THREE.Color(bottomColor);
+				face.vertexColors[1] = new THREE.Color(bottomColor); 
+				face.vertexColors[2] = new THREE.Color(bottomColor); 
+				geom.faces.push(face);
+
+				// face 2
+
+				face = new THREE.Face3(2,7,6); 
+				face.vertexColors[0] = new THREE.Color(bottomColor); 
+				face.vertexColors[1] = new THREE.Color(topColor); 
+				face.vertexColors[2] = new THREE.Color(topColor); 
+				geom.faces.push(face); 
+					
+				face = new THREE.Face3(2,3,7);
+				face.vertexColors[0] = new THREE.Color(bottomColor);
+				face.vertexColors[1] = new THREE.Color(bottomColor); 
+				face.vertexColors[2] = new THREE.Color(topColor); 
+				geom.faces.push(face);
+				
+				// face3
+				
+		
+				face = new THREE.Face3(0,7,3);
+				face.vertexColors[0] = new THREE.Color(bottomColor);
+				face.vertexColors[1] = new THREE.Color(topColor); 
+				face.vertexColors[2] = new THREE.Color(bottomColor); 
+				geom.faces.push(face);
+				
+				face = new THREE.Face3(0,4,7);
+				face.vertexColors[0] = new THREE.Color(bottomColor);
+				face.vertexColors[1] = new THREE.Color(topColor); 
+				face.vertexColors[2] = new THREE.Color(topColor); 
+				geom.faces.push(face);
+				
+				
+				///// face 4
+
+				face = new THREE.Face3(1,6,5);
+				face.vertexColors[0] = new THREE.Color(bottomColor);
+				face.vertexColors[1] = new THREE.Color(topColor); 
+				face.vertexColors[2] = new THREE.Color(topColor); 
+				geom.faces.push(face);
+				
+
+				face = new THREE.Face3(1,2,6);
+				face.vertexColors[0] = new THREE.Color(bottomColor);
+				face.vertexColors[1] = new THREE.Color(bottomColor); 
+				face.vertexColors[2] = new THREE.Color(topColor); 
+				geom.faces.push(face);
+				
+				///// face 5
+				
+				face = new THREE.Face3(4,6,7);
+				face.vertexColors[0] = new THREE.Color(topColor);
+				face.vertexColors[1] = new THREE.Color(topColor); 
+				face.vertexColors[2] = new THREE.Color(topColor); 
+				geom.faces.push(face);
+				
+				face = new THREE.Face3(4,5,6);
+				face.vertexColors[0] = new THREE.Color(topColor);
+				face.vertexColors[1] = new THREE.Color(topColor); 
+				face.vertexColors[2] = new THREE.Color(topColor); 
+				geom.faces.push(face);
+				
+				/// face 6
+				
+				face = new THREE.Face3(0,5,4);
+				face.vertexColors[0] = new THREE.Color(bottomColor);
+				face.vertexColors[1] = new THREE.Color(topColor); 
+				face.vertexColors[2] = new THREE.Color(topColor); 
+				geom.faces.push(face);
+				
+
+				face = new THREE.Face3(0,1,5);
+				face.vertexColors[0] = new THREE.Color(bottomColor);
+				face.vertexColors[1] = new THREE.Color(bottomColor); 
+				face.vertexColors[2] = new THREE.Color(topColor); 
+				geom.faces.push(face);
+
+				
+				
+				geom.computeFaceNormals();
+				geom.computeVertexNormals();
+
+				var object = new THREE.Mesh( geom,meshMaterial);
+				object.doubleSided = true;
+				
+				
+				
+								
+				object.rotation.x = rotX;
+				object.rotation.y = rotY;
+				object.rotation.z = rotZ;
+				
+				object.position.x = posX;
+				object.position.y = posY;
+				object.position.z = posZ;
+				
+				
+				return {
+					geometry : geom,
+					cube : object
+				};
+				
+				
+			}
+
+			function extrude(geometry, scale)
+			{
+				var points = geometry.vertices;
+				
+				
+				// find normal of cube, we will use this to determine the direction we will extrude 
+
+				var difA = points[5] - points[4];						
+				var difB = points[6] - points[5];
+				
+				var vectorA = new THREE.Vector3(points[5].x - points[4].x, points[5].y - points[4].y, points[5].z - points[4].z);
+				var vectorB = new THREE.Vector3(points[6].x - points[5].x, points[6].y - points[5].y, points[6].z - points[5].z);
+				
+				
+				var normal = vectorA.cross(vectorB);
+				
+				// normalize for direction
+				normal.normalize();
+				
+				
+				// extrusion by scale, min is bottom vertices, max is magnitude of scale
+
+				points[4].x =  points[0].x + (normal.x * scale);
+				points[4].y =  points[0].y + (normal.y * scale);
+				points[4].z =  points[0].z + (normal.z * scale);
+				
+				points[5].x =  points[1].x + (normal.x * scale);
+				points[5].y =  points[1].y + (normal.y * scale);
+				points[5].z =  points[1].z + (normal.z * scale);
+				
+				points[6].x =  points[2].x + (normal.x * scale);
+				points[6].y =  points[2].y + (normal.y * scale);
+				points[6].z =  points[2].z + (normal.z * scale);
+				
+				points[7].x =  points[3].x + (normal.x * scale);
+				points[7].y =  points[3].y + (normal.y * scale);
+				points[7].z =  points[3].z + (normal.z * scale);
+					
+
+				geometry.verticesNeedUpdate = true;
+			}	
+			
+			
+			function createMasterFace(length, topColor, bottomColor, cubeWidth)
+			{
+				//var cubeWidth = 3;
+				var seperationX = 0;
+				var seperationY = 0;
+
+				
+				seperationX = -200 * (cubeWidth - 2);
+				seperationY = -200 * (cubeWidth - 2);
+				
+				// even number of cubes on face
+				if (cubeWidth % 2 == 0)
+				{
+					seperationX += 100;
+					seperationY += 100;
+				}
+				
+				var saveX = seperationX;
+				
+				
+				var cubes = [];
+				var geometries = [];
+				
+				var val = 400;
+				
+				val = cubeWidth * 100 + 100;
+				
+				// 3  = 400
+				// 4  = 500
+				
+				//val = 500
+				
+				
+				for (i = 0 ; i < cubeWidth ; i++)
+				{
+					for (j = 0 ; j < cubeWidth ; j++)
+					{
+						data = createCube(length, topColor , bottomColor , seperationX, val, seperationY, -ninety, 0, 0);
+						cubes.push(data.cube);
+						geometries.push(data.geometry);
+						
+						seperationX += 200;
+					}
+					
+					seperationX = saveX;
+					seperationY += 200;
+				}
+											
+				
+				return {
+					faceCubes: cubes,
+					faceGeom: geometries
+				};
+				
+				
+			}
+
+
+		
+		</script>
+		
+		
+		
+		
+	
+		<!--  define scene -->
+		<script>
+		
+			// Create three.js scene
+			var scene = new THREE.Scene();
+
+			// setup for camera
+			var camera = new THREE.PerspectiveCamera( 300, window.innerWidth / window.innerHeight, 0.1, 10000 );
+
+			// add renderer to page
+			var renderer = new THREE.WebGLRenderer();
+			
+			
+			// controller for mouse rotation
+			
+			
+			controls = new THREE.OrbitControls( camera/*, renderer.domElement */);
+			controls.enableZoom = false;
+			controls.enablePan = false;
+			
+			controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+			controls.dampingFactor = 0.25;
+			
+			//create group for all cubes
+			var masterGroup = new THREE.Group();
+			
+			// create group for each face
+			var group1 = new THREE.Group();
+			var group2 = new THREE.Group();
+			var group3 = new THREE.Group();
+			var group4 = new THREE.Group();
+			var group5 = new THREE.Group();
+			var group6 = new THREE.Group();
+			
+			
+
+			
+		
+			// set clear color
+			renderer.setClearColor(0xfeceb8, 1);
+			
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+			
+			
+			camera.position.z = 2000;
+			
+			// remember these initial values
+			var tanFOV = Math.tan( ( ( Math.PI / 180 ) * camera.fov / 2 ) );
+			var windowHeight = window.innerHeight;
+			
+		</script>
+		
+		<!-- create cubes -->
+		<script>
+		
+			// global face width count e.g. 4 denotes each face will have 16 partitions
+			var g_faceWidth = 3;
+		
+		
+			//setup a cube
+						
+			var cubes = [];
+			var geometries = [];
+			
+			// faces and their geometries
+			
+			var face1 = [];
+			var geometries1 = [];
+			
+			
+			// unnessesary declarations for rotations
+			var pi = 3.14;
+			var fortyFive = Math.PI / 45;
+			var thirty = Math.PI / 60;
+			var sixty = Math.PI / 30;
+			var ninety = Math.PI / 2;
+			var oneeighty = Math.PI;
+			
+			
+			
+			
+			// createMasterFace(rotX, rotY, rotZ, cubes, geom, group)
+			
+			var face1;
+			var geom1;
+			
+			var face2;
+			var geom2;
+			
+			var face3;
+			var geom3;
+			
+			var face4;
+			var geom4;
+			
+			var face5;
+			var geom5;
+			
+			var face6;
+			var geom6;
+			
+			// 
+			// 
+			data = createMasterFace(100, "0x4b4a48" , "0x000000" , g_faceWidth);
+			face1 = data.faceCubes;
+			geom1 = data.faceGeom;
+			
+			for (i = 0; i < face1.length ; i++)
+			{
+				group1.add(face1[i]);
+				//console.log(geom1[i]);
+			}
+			
+			
+			data = createMasterFace(100, "0x4b4a48" , "0x000000" , g_faceWidth );
+			face2 = data.faceCubes;
+			geom2 = data.faceGeom;
+			
+			for (i = 0; i < face2.length ; i++)
+			{
+				group2.add(face2[i]);
+			}
+			
+			
+			data = createMasterFace(100, "0x4b4a48" , "0x000000" , g_faceWidth );
+			face3 = data.faceCubes;
+			geom3 = data.faceGeom;
+			
+			for (i = 0; i < face3.length ; i++)
+			{
+				group3.add(face3[i]);
+			}
+			
+			
+			data = createMasterFace(100, "0x4b4a48" , "0x000000" , g_faceWidth );
+			face4 = data.faceCubes;
+			geom4 = data.faceGeom;
+			
+			for (i = 0; i < face4.length ; i++)
+			{
+				group4.add(face4[i]);
+			}
+			
+			data = createMasterFace(100, "0x4b4a48" , "0x000000" , g_faceWidth );
+			face5 = data.faceCubes;
+			geom5 = data.faceGeom;
+			
+			for (i = 0; i < face5.length ; i++)
+			{
+				group5.add(face5[i]);
+			}
+			
+			data = createMasterFace(100, "0x4b4a48" , "0x000000" , g_faceWidth );
+			face6 = data.faceCubes;
+			geom6 = data.faceGeom;
+			
+			for (i = 0; i < face6.length ; i++)
+			{
+				group6.add(face6[i]);
+			}
+		
+			
+			// rotate each of the groups
+			
+			group2.rotation.z = ninety;
+			group3.rotation.z = -ninety;
+			group4.rotation.z = oneeighty;
+			
+			
+			group5.rotation.x = ninety;
+			group6.rotation.x = -ninety;
+			group5.rotation.y = ninety;
+			group6.rotation.y = -ninety;
+			
+			
+			
+			
+			// create masterGroup
+			masterGroup.add(group1);
+			masterGroup.add(group2);
+			masterGroup.add(group3);
+			masterGroup.add(group4);
+			masterGroup.add(group5);
+			masterGroup.add(group6);
+			
+			//cubes.push(data.cube);
+			//group.add(cubes[0]);
+			
+			scene.add(masterGroup);
+			
+	</script>
+	
+	
+	<script>
+	// Resizing for window
+	
+	window.addEventListener( 'resize', onWindowResize, false );
+
+function onWindowResize( event ) {
+	
+    camera.aspect = window.innerWidth / window.innerHeight;
+    
+    // adjust the FOV
+    camera.fov = ( 360 / Math.PI ) * Math.atan( tanFOV * ( window.innerHeight / windowHeight ) );
+    
+    camera.updateProjectionMatrix();
+    camera.lookAt( scene.position );
+
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.render( scene, camera );
+    
+}
+	
+	
+	
+	</script>
+	
+
+	
+	
+	<script>
+	
+			
+			
+			// sampleRate is 44100
+			// Hz per bucket is smpleRate/fftSize
+			// with fftSize =4096
+			// frequency pe bucket is ~ 10Hz
+			
+			// sound
+			
+			var bufferSize = 1024;
+			
+			
+			var m_fftSize = 4096;
+			
+			/* Hoist some variables. */
+			var audio,
+			    context = new (window.AudioContext ||
+			                   window.webAudioContext ||
+			                   window.webkitAudioContext)(),
+			    /* Create a script processor node with a `bufferSize` of 1024. */
+			    processor = context.createScriptProcessor(bufferSize),
+			    /* Create an analyser node */
+			    analyser = context.createAnalyser();
+			
+			/* Wire the processor into our audio context. */
+			processor.connect(context.destination);
+			/* Wire the analyser into the processor */
+			analyser.connect(processor);
+			
+			
+			// set analyser fft
+			analyser.fftSize = m_fftSize;
+			
+			
+			
+			/* Define a Uint8Array to receive the analysers data. */
+			var data = new Uint8Array(analyser.frequencyBinCount);
+				
+			//console.log(analyser.frequencyBinCount);
+			
+			/* Define a `Sound` Class */
+			var Sound = {
+			    /* Give the sound an element property initially undefined. */
+			    element: undefined,
+			    /* Define a class method of play which instantiates a new Media Element
+			     * Source each time the file plays, once the file has completed disconnect 
+			     * and destroy the media element source. */
+			     play: function() { 
+			    	    var sound = context.createMediaElementSource(this.element);
+			    	    this.element.onended = function() {
+			    	        sound.disconnect();
+			    	        sound = null;
+			    	        /* Noop the audioprocess handler when the file finishes. */
+			    	        processor.onaudioprocess = function() {};
+			    	    }
+			    	    /* Add the following line to wire into the analyser. */
+			    	    sound.connect(analyser);
+			    	    sound.connect(context.destination);
+
+			    	    processor.onaudioprocess = function() {
+			    	        /* Populate the data array with the frequency data. */
+			    	        analyser.getByteFrequencyData(data);
+			    	    };
+			    	    /* Call `play` on the MediaElement. */
+			    	    
+			    	    var playPromise = this.element.play();
+			    	    
+			    	    if (playPromise !== undefined) {
+			    	        playPromise.then(_ => {
+			    	          // Automatic playback started!
+			    	          // Show playing UI.
+			    	        })
+			    	        .catch(error => {
+			    	          // Auto-play was prevented
+			    	          // Show paused UI.
+			    	        });
+			    	      }
+			    	}
+			};
+			
+			/* Create an async function which returns a promise of a playable audio element. */
+			function loadAudioElement(url) {
+			    return new Promise(function(resolve, reject) {
+			        var audio = new Audio();
+			        audio.addEventListener('canplay', function() {
+			            /* Resolve the promise, passing through the element. */
+			            resolve(audio);
+			        });
+			        /* Reject the promise on an error. */
+			        audio.addEventListener('error', reject);
+			        audio.src = url;
+			    });
+			}
+			
+			
+			
+			// Let's load our file. 
+			loadAudioElement("audio/WorstCase.wav").then(function(elem) {
+			    // Instantiate the Sound class into our hoisted variable. 
+			    audio = Object.create(Sound);
+			    // Set the element of `audio` to our MediaElement. 
+			    audio.element = elem;
+			    // Immediately play the file. 
+			    audio.play();
+			}, function(elem) {
+			    // Let's throw an the error from the MediaElement if it fails. 
+			    throw elem.error;
+			});
+
+			
+			var scaler = 0;
+			var total = 0;
+			var intensity = 1;
+			var maxMagnitude = 300;
+
+			//define ranges for 1 face
+			group1Freq = [];
+			group2Freq = [];
+			group3Freq = [];
+			group4Freq = [];
+			group5Freq = [];
+			group6Freq = [];
+
+			
+			masterGroup.rotation.z = 50;
+			masterGroup.rotation.y = 50;
+			masterGroup.rotation.x = -400;
+			
+			var frequency;
+			var geometry;
+			
+			cubesPerFace = g_faceWidth * g_faceWidth;
+			
+			//function assignCubeValues(type, fft, faceSize)
+			
+			var freqBuckets;
+			var freqType;
+			
+			/*
+			for (j=0; j < 6 ; j++)
+			{
+				
+				
+				for (i=0; i < cubesPerFace ; i++)
+				{
+					
+					switch (j)
+					{
+					case 1:
+						freqType = "sub-bass";
+						group1Freq = assignCubeValues(freqType, analyser.fftSize, 3);
+						break;
+					case 2:
+						freqType = "bass";
+						group2Freq = assignCubeValues(freqType, analyser.fftSize, 3);
+						break;
+					case 3:
+						freqType = "low-mid";
+						group3Freq = assignCubeValues(freqType, analyser.fftSize, 3);
+						break;
+					case 4:
+						freqType = "mid";
+						group4Freq = assignCubeValues(freqType, analyser.fftSize, 3);
+						break;
+					case 5:
+						freqType = "presence";
+						group5Freq = assignCubeValues(freqType, analyser.fftSize, 3);
+						break;
+
+					default:
+						freqType = "brilliance";
+						group6Freq = assignCubeValues(freqType, analyser.fftSize, 3);
+						break;
+					
+					
+					}		
+				}	
+			}
+			
+			*/
+			
+			
+			for (j=0; j < 6 ; j++)
+			{
+				
+
+					switch (j)
+					{
+					case 1:
+						freqType = "sub-bass";
+						group1Freq = createTestFreq(analyser.fftSize);
+						break;
+					case 2:
+						freqType = "bass";
+						group2Freq = createTestFreq(analyser.fftSize);
+						break;
+					case 3:
+						freqType = "low-mid";
+						group3Freq = createTestFreq(analyser.fftSize);
+						break;
+					case 4:
+						freqType = "mid";
+						group4Freq = createTestFreq(analyser.fftSize);
+						break;
+					case 5:
+						freqType = "presence";
+						group5Freq = createTestFreq(analyser.fftSize);
+						break;
+
+					default:
+						freqType = "brilliance";
+						group6Freq = createTestFreq(analyser.fftSize);
+						break;
+					
+					
+					}		
+				
+			}
+
+			
+			function animate() {
+				
+				requestAnimationFrame( animate );
+		
+				masterGroup.rotation.z += 0.001;
+				masterGroup.rotation.y += 0.001;
+				masterGroup.rotation.x += 0.001;
+				
+				
+				// for each face on cube
+				for (l =0; l < 6; l++)
+				{
+					switch (l) 
+					{
+
+					case 1:
+						frequency = group1Freq;
+						geometry = geom1;
+						break;
+					case 2:
+						frequency = group2Freq;
+						geometry = geom2;
+						break;
+					case 3:
+						frequency = group3Freq;
+						geometry = geom3;
+						break;
+					case 4:
+						frequency = group4Freq;
+						geometry = geom4;
+						break;
+					case 5:
+						frequency = group5Freq;
+						geometry = geom5;
+						break;
+
+					default:
+						frequency = group6Freq;
+						geometry = geom6;
+						break;
+						
+					}
+					
+				
+					// number of cubes on one face
+					for (i =0; i < cubesPerFace ; i++)
+					{
+					
+						for (j = frequency[i].lowEnd; j < frequency[i].highEnd; j++)
+						{
+							total += data[j];
+						}							
+						
+						// get average value
+						scaler = total / (frequency[i].highEnd - frequency[i].lowEnd);
+											
+						// divide by max (0-1)
+						scaler = scaler / 255;			
+						// multiple by some max value			
+						scaler = scaler * (maxMagnitude + intensity);
+		
+						extrude(geometry[i], scaler); 
+						
+						// reset scaler
+						scaler = 0;
+						total = 0;
+						intensity = 1;
+						
+						
+					}
+					
+				}
+					
+				controls.update();
+				
+				renderer.render( scene, camera );
+			}
+			
+			animate();
+			
+			
+			
+		</script>
+		
+		<script>
+		
+		$("form").on('change','#audioFile' , function(){ Run(); });
+		
+			
+		function Run(audio)
+		{
+			var audio = $('#audioFile')[0].files[0]
+			if (audio){
+	
+				console.log(audio.name);
+				
+				/* Let's load our file. */
+				loadAudioElement(audio.data).then(function(elem) {
+				    /* Instantiate the Sound class into our hoisted variable. */
+				    audio = Object.create(Sound);
+				    /* Set the element of `audio` to our MediaElement. */
+				    audio.element = elem;
+				    /* Immediately play the file. */
+				    audio.play();
+				}, function(elem) {
+				    /* Let's throw an the error from the MediaElement if it fails. */
+				    throw elem.error;
+				});
+				
+				animate();
+			}
+			
+		
+		}
+				
+		
+		</script>
+
+	</body>
+</html>
